@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const fs = require('fs');
 
 const {
     initDatabase,
@@ -10,18 +9,11 @@ const {
     studentQueries,
     buttonQueries,
     weekQueries,
-    scoreQueries,
-    importQueries
+    scoreQueries
 } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Ensure data directory exists
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-}
 
 // Initialize database
 initDatabase();
@@ -34,11 +26,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Trust proxy (required for Railway, Render, etc.)
 app.set('trust proxy', 1);
 
-// Session configuration - production ready
+// Session configuration
 const isProduction = process.env.NODE_ENV === 'production';
 app.use(session({
     name: 'emulation_session',
-    secret: process.env.SESSION_SECRET || 'emulation-tracker-secret-key-change-in-production',
+    secret: process.env.SESSION_SECRET || 'emulation-tracker-secret-key',
     resave: false,
     saveUninitialized: false,
     rolling: true,
@@ -46,7 +38,7 @@ app.use(session({
         secure: isProduction,
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
-        sameSite: isProduction ? 'none' : 'lax' // 'none' for cross-site cookies in production
+        sameSite: isProduction ? 'none' : 'lax'
     }
 }));
 
@@ -69,189 +61,243 @@ const requireUser = (req, res, next) => {
 
 // ============ AUTH ROUTES ============
 
-// Admin login
-app.post('/api/auth/admin/login', (req, res) => {
-    const { username, password } = req.body;
-    const admin = adminQueries.login(username, password);
-    if (admin) {
-        req.session.admin = admin;
-        res.json({ success: true, admin });
-    } else {
-        res.status(401).json({ error: 'Sai tài khoản hoặc mật khẩu' });
+app.post('/api/auth/admin/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const admin = await adminQueries.login(username, password);
+        if (admin) {
+            req.session.admin = admin;
+            res.json({ success: true, admin });
+        } else {
+            res.status(401).json({ error: 'Sai tài khoản hoặc mật khẩu' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
-// Student login
-app.post('/api/auth/student/login', (req, res) => {
-    const { studentCode } = req.body;
-    const student = studentQueries.getByCode(studentCode);
-    if (student) {
-        req.session.student = { id: student.id }; // Only store ID, fetch fresh data when needed
-        res.json({ success: true, student });
-    } else {
-        res.status(401).json({ error: 'Mã số học sinh không tồn tại' });
+app.post('/api/auth/student/login', async (req, res) => {
+    try {
+        const { studentCode } = req.body;
+        const student = await studentQueries.getByCode(studentCode);
+        if (student) {
+            req.session.student = { id: student.id };
+            res.json({ success: true, student });
+        } else {
+            res.status(401).json({ error: 'Mã số học sinh không tồn tại' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
-// Logout
 app.post('/api/auth/logout', (req, res) => {
     req.session.destroy();
     res.json({ success: true });
 });
 
-// Check session
-app.get('/api/auth/session', (req, res) => {
-    if (req.session.admin) {
-        res.json({ type: 'admin', user: req.session.admin });
-    } else if (req.session.student) {
-        res.json({ type: 'student', user: req.session.student });
-    } else {
-        res.json({ type: null });
-    }
+app.get('/api/auth/check', (req, res) => {
+    res.json({
+        admin: !!req.session.admin,
+        student: !!req.session.student
+    });
 });
 
-// ============ STUDENT ROUTES (Admin) ============
-
-app.get('/api/students', requireAdmin, (req, res) => {
-    res.json(studentQueries.getAll());
-});
-
-app.post('/api/students', requireAdmin, (req, res) => {
-    const { name, student_code } = req.body;
+app.post('/api/auth/change-password', requireAdmin, async (req, res) => {
     try {
-        const id = studentQueries.create(name, student_code);
-        res.json({ success: true, id });
-    } catch (err) {
-        res.status(400).json({ error: 'Mã số học sinh đã tồn tại' });
-    }
-});
-
-app.put('/api/students/:id', requireAdmin, (req, res) => {
-    const { name, student_code } = req.body;
-    try {
-        studentQueries.update(req.params.id, name, student_code);
+        const { newPassword } = req.body;
+        await adminQueries.changePassword(req.session.admin.id, newPassword);
         res.json({ success: true });
     } catch (err) {
-        res.status(400).json({ error: 'Mã số học sinh đã tồn tại' });
-    }
-});
-
-app.delete('/api/students/:id', requireAdmin, (req, res) => {
-    studentQueries.delete(req.params.id);
-    res.json({ success: true });
-});
-
-app.post('/api/students/reset-points', requireAdmin, (req, res) => {
-    studentQueries.resetAllPoints();
-    res.json({ success: true });
-});
-
-// ============ PRESET BUTTON ROUTES ============
-
-app.get('/api/buttons', requireAdmin, (req, res) => {
-    res.json(buttonQueries.getAll());
-});
-
-app.post('/api/buttons', requireAdmin, (req, res) => {
-    const { name, points, type } = req.body;
-    const id = buttonQueries.create(name, parseInt(points), type);
-    res.json({ success: true, id });
-});
-
-app.delete('/api/buttons/:id', requireAdmin, (req, res) => {
-    buttonQueries.delete(req.params.id);
-    res.json({ success: true });
-});
-
-// ============ WEEK ROUTES ============
-
-app.get('/api/weeks', requireAdmin, (req, res) => {
-    res.json(weekQueries.getAll());
-});
-
-app.post('/api/weeks', requireAdmin, (req, res) => {
-    const { name } = req.body;
-    const id = weekQueries.create(name);
-    res.json({ success: true, id });
-});
-
-app.post('/api/weeks/:id/activate', requireAdmin, (req, res) => {
-    weekQueries.setActive(req.params.id);
-    res.json({ success: true });
-});
-
-app.delete('/api/weeks/:id', requireAdmin, (req, res) => {
-    weekQueries.delete(req.params.id);
-    res.json({ success: true });
-});
-
-// Public weeks for overview
-app.get('/api/weeks/public', (req, res) => {
-    res.json(weekQueries.getAll());
-});
-
-// Overview endpoint
-app.get('/api/overview/:weekId', (req, res) => {
-    const weekId = req.params.weekId;
-    const weeks = weekQueries.getAll();
-    const week = weeks.find(w => w.id == weekId);
-    const records = scoreQueries.getByWeek(weekId);
-    res.json({ week, records });
-});
-
-// ============ SCORE ROUTES ============
-
-app.post('/api/scores', requireAdmin, (req, res) => {
-    try {
-        const { student_id, button_id, week_id, points, note, violation_date } = req.body;
-        const id = scoreQueries.create(student_id, button_id, week_id, points, note, violation_date);
-        res.json({ success: true, id });
-    } catch (err) {
-        console.error('Score creation error:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-app.get('/api/scores/student/:id', requireAdmin, (req, res) => {
-    res.json(scoreQueries.getByStudent(req.params.id));
-});
+// ============ STUDENT ROUTES ============
 
-app.get('/api/scores/week/:id', requireAdmin, (req, res) => {
-    res.json(scoreQueries.getByWeek(req.params.id));
-});
-
-app.delete('/api/scores/:id', requireAdmin, (req, res) => {
-    scoreQueries.delete(req.params.id);
-    res.json({ success: true });
-});
-
-app.get('/api/scores/all', requireAdmin, (req, res) => {
-    res.json(scoreQueries.getAll());
-});
-
-// ============ LEADERBOARD ============
-
-app.get('/api/leaderboard', (req, res) => {
-    res.json(studentQueries.getLeaderboard());
-});
-
-// ============ IMPORT ROUTES ============
-
-app.post('/api/import/students', requireAdmin, (req, res) => {
-    const { students } = req.body;
+app.get('/api/students', requireAdmin, async (req, res) => {
     try {
-        importQueries.importStudents(students);
-        res.json({ success: true });
+        res.json(await studentQueries.getAll());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/students', requireAdmin, async (req, res) => {
+    try {
+        const { name, student_code } = req.body;
+        const id = await studentQueries.create(name, student_code);
+        res.json({ success: true, id });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 });
 
-app.post('/api/import/scores', requireAdmin, (req, res) => {
-    const { records, week_id } = req.body;
+app.delete('/api/students/:id', requireAdmin, async (req, res) => {
     try {
-        importQueries.importScores(records, week_id);
+        await studentQueries.delete(req.params.id);
         res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============ BUTTON ROUTES ============
+
+app.get('/api/buttons', requireAdmin, async (req, res) => {
+    try {
+        res.json(await buttonQueries.getAll());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/buttons', requireAdmin, async (req, res) => {
+    try {
+        const { name, points, type } = req.body;
+        const id = await buttonQueries.create(name, points, type);
+        res.json({ success: true, id });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+app.delete('/api/buttons/:id', requireAdmin, async (req, res) => {
+    try {
+        await buttonQueries.delete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============ WEEK ROUTES ============
+
+app.get('/api/weeks', requireAdmin, async (req, res) => {
+    try {
+        res.json(await weekQueries.getAll());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/weeks', requireAdmin, async (req, res) => {
+    try {
+        const { name } = req.body;
+        const id = await weekQueries.create(name);
+        res.json({ success: true, id });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+app.delete('/api/weeks/:id', requireAdmin, async (req, res) => {
+    try {
+        await weekQueries.delete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/weeks/public', async (req, res) => {
+    try {
+        res.json(await weekQueries.getAll());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/overview/:weekId', async (req, res) => {
+    try {
+        const weeks = await weekQueries.getAll();
+        const week = weeks.find(w => w.id.toString() === req.params.weekId);
+        const records = await scoreQueries.getByWeek(req.params.weekId);
+        res.json({ week, records });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============ SCORE ROUTES ============
+
+app.post('/api/scores', requireAdmin, async (req, res) => {
+    try {
+        const { student_id, button_id, week_id, points, note, violation_date } = req.body;
+        const id = await scoreQueries.create(student_id, button_id, week_id, points, note, violation_date);
+        res.json({ success: true, id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/scores/student/:id', requireAdmin, async (req, res) => {
+    try {
+        res.json(await scoreQueries.getByStudent(req.params.id));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/scores/week/:id', requireAdmin, async (req, res) => {
+    try {
+        res.json(await scoreQueries.getByWeek(req.params.id));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/scores/:id', requireAdmin, async (req, res) => {
+    try {
+        await scoreQueries.delete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/scores/all', requireAdmin, async (req, res) => {
+    try {
+        res.json(await scoreQueries.getAll());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============ LEADERBOARD ============
+
+app.get('/api/leaderboard', async (req, res) => {
+    try {
+        res.json(await studentQueries.getLeaderboard());
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/reset-points', requireAdmin, async (req, res) => {
+    try {
+        await studentQueries.resetAllPoints();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============ IMPORT ============
+
+app.post('/api/import/students', requireAdmin, async (req, res) => {
+    try {
+        const { students } = req.body;
+        let imported = 0;
+        for (const s of students) {
+            try {
+                await studentQueries.create(s.name, s.student_code);
+                imported++;
+            } catch (e) {
+                // Skip duplicates
+            }
+        }
+        res.json({ success: true, imported });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -259,15 +305,23 @@ app.post('/api/import/scores', requireAdmin, (req, res) => {
 
 // ============ USER ROUTES ============
 
-app.get('/api/user/profile', requireUser, (req, res) => {
-    const student = studentQueries.getById(req.session.student.id);
-    const leaderboard = studentQueries.getLeaderboard();
-    const rank = leaderboard.findIndex(s => s.id === student.id) + 1;
-    res.json({ ...student, rank, total: leaderboard.length });
+app.get('/api/user/profile', requireUser, async (req, res) => {
+    try {
+        const student = await studentQueries.getById(req.session.student.id);
+        const leaderboard = await studentQueries.getLeaderboard();
+        const rank = leaderboard.findIndex(s => s.id.toString() === student.id.toString()) + 1;
+        res.json({ ...student, rank, total: leaderboard.length });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.get('/api/user/history', requireUser, (req, res) => {
-    res.json(scoreQueries.getByStudent(req.session.student.id));
+app.get('/api/user/history', requireUser, async (req, res) => {
+    try {
+        res.json(await scoreQueries.getByStudent(req.session.student.id));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // ============ SERVE HTML ============
