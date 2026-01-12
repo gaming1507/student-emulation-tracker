@@ -103,6 +103,13 @@ app.get('/api/auth/check', (req, res) => {
     });
 });
 
+app.get('/api/auth/session', (req, res) => {
+    res.json({
+        admin: req.session.admin || null,
+        student: req.session.student || null
+    });
+});
+
 app.post('/api/auth/change-password', requireAdmin, async (req, res) => {
     try {
         const { newPassword } = req.body;
