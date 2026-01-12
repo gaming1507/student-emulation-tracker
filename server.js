@@ -26,19 +26,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Trust proxy (required for Railway, Render, etc.)
 app.set('trust proxy', 1);
 
-// Session configuration
-const isProduction = process.env.NODE_ENV === 'production';
+// Session configuration - simple
 app.use(session({
-    name: 'emulation_session',
-    secret: process.env.SESSION_SECRET || 'emulation-tracker-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
+    secret: process.env.SESSION_SECRET || 'emulation-tracker-secret',
+    resave: true,
+    saveUninitialized: true,
     cookie: {
-        secure: isProduction,
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-        sameSite: isProduction ? 'none' : 'lax'
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
 
