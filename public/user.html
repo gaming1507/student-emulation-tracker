@@ -134,7 +134,7 @@
 
             document.getElementById('historyTable').innerHTML = history.map(h => `
                 <tr>
-                    <td>${new Date(h.created_at).toLocaleString('vi-VN')}</td>
+                    <td>${h.violation_date ? new Date(h.violation_date).toLocaleDateString('vi-VN') : new Date(h.created_at).toLocaleString('vi-VN')}</td>
                     <td>${h.button_name || h.note || 'Điều chỉnh'}</td>
                     <td>${h.week_name || '-'}</td>
                     <td>
