@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Theo Dõi Thi Đua</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🏆 Thi Đua</h2>
+                <p>Quản trị viên</p>
+            </div>
+
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-section="dashboard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                            Tổng quan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="students">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Học sinh
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="scoring">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                            Chấm điểm
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="buttons">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="16"></line>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            Nút điểm
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="weeks">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            Tuần
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="import">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Import
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="history">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                            Lịch sử
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="leaderboard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            Xếp hạng
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid var(--border);">
+                <button class="btn btn-secondary" style="width: 100%;" onclick="logout()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Đăng xuất
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section class="section active" id="dashboard">
+                <div class="page-header">
+                    <h1 class="page-title">Tổng quan</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalStudents">0</div>
+                        <div class="stat-label">Học sinh</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalWeeks">0</div>
+                        <div class="stat-label">Tuần thi đua</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgPoints">0</div>
+                        <div class="stat-label">Điểm trung bình</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalButtons">0</div>
+                        <div class="stat-label">Nút điểm</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top 5 học sinh xuất sắc</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hạng</th>
+                                    <th>Họ tên</th>
+                                    <th>Mã số</th>
+                                    <th>Điểm</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topStudentsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students Section -->
+            <section class="section" id="students">
+                <div class="page-header">
+                    <h1 class="page-title">Quản lý học sinh</h1>
+                    <button class="btn btn-primary" onclick="showAddStudentModal()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Thêm học sinh
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Họ tên</th>
+                                    <th>Mã số</th>
+                                    <th>Điểm</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scoring Section -->
+            <section class="section" id="scoring">
+                <div class="page-header">
+                    <h1 class="page-title">Chấm điểm</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Chọn học sinh & thông tin</h3>
+                    </div>
+                    <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 2; min-width: 200px;">
+                            <label>Học sinh</label>
+                            <select id="selectStudent"
+                                style="width: 100%; padding: 14px 16px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-size: 15px;">
+                                <option value="">-- Chọn học sinh --</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Tuần</label>
+                            <select id="selectWeek"
+                                style="width: 100%; padding: 14px 16px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-size: 15px;">
+                                <option value="">-- Chọn tuần --</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 150px;">
+                            <label>Ngày vi phạm (nếu có)</label>
+                            <input type="date" id="violationDate"
+                                style="width: 100%; padding: 14px 16px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-size: 15px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="scoringPanel" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">✅ Điểm cộng</h3>
+                    </div>
+                    <div class="buttons-grid" id="bonusButtons"></div>
+
+                    <div class="card-header" style="margin-top: 24px;">
+                        <h3 class="card-title">❌ Điểm trừ</h3>
+                    </div>
+                    <div class="buttons-grid" id="penaltyButtons"></div>
+                </div>
+
+                <div class="card" id="historyPanel" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 Lịch sử chấm điểm</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tuần</th>
+                                    <th>Ngày</th>
+                                    <th>Nội dung</th>
+                                    <th>Điểm</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Buttons Section -->
+            <section class="section" id="buttons">
+                <div class="page-header">
+                    <h1 class="page-title">Quản lý nút điểm</h1>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title" style="margin-bottom: 16px;">➕ Thêm nút cộng điểm</h3>
+                    <div class="inline-form">
+                        <div class="form-group">
+                            <label>Tên nút</label>
+                            <input type="text" id="bonusName" placeholder="VD: Điểm 10">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điểm cộng</label>
+                            <input type="number" id="bonusPoints" min="1" value="5">
+                        </div>
+                        <button class="btn btn-success" onclick="addButton('bonus')">Thêm</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title" style="margin-bottom: 16px;">➖ Thêm nút trừ điểm</h3>
+                    <div class="inline-form">
+                        <div class="form-group">
+                            <label>Tên lỗi</label>
+                            <input type="text" id="penaltyName" placeholder="VD: Đi muộn">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điểm trừ</label>
+                            <input type="number" id="penaltyPoints" min="1" value="5">
+                        </div>
+                        <button class="btn btn-danger" onclick="addButton('penalty')">Thêm</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Danh sách nút điểm</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Loại</th>
+                                    <th>Điểm</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="buttonsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Weeks Section -->
+            <section class="section" id="weeks">
+                <div class="page-header">
+                    <h1 class="page-title">Quản lý tuần thi đua</h1>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title" style="margin-bottom: 16px;">⚡ Thêm tuần nhanh</h3>
+                    <div class="inline-form">
+                        <div class="form-group">
+                            <label>Thêm nhiều tuần (từ tuần X đến tuần Y)</label>
+                            <div style="display: flex; gap: 12px; align-items: center;">
+                                <input type="number" id="weekFrom" placeholder="Từ" min="1" value="1"
+                                    style="width: 80px;">
+                                <span>đến</span>
+                                <input type="number" id="weekTo" placeholder="Đến" min="1" value="10"
+                                    style="width: 80px;">
+                                <button class="btn btn-primary" onclick="addQuickWeeks()">Thêm tất cả</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="inline-form" style="margin-top: 12px;">
+                        <div class="form-group">
+                            <label>Hoặc thêm tuần đơn lẻ</label>
+                            <input type="text" id="weekName" placeholder="VD: Tuần 1">
+                        </div>
+                        <button class="btn btn-secondary" onclick="addWeek()">Thêm tuần</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tên tuần</th>
+                                    <th>Xem</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="weeksTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Import Section -->
+            <section class="section" id="import">
+                <div class="page-header">
+                    <h1 class="page-title">Import dữ liệu</h1>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title" style="margin-bottom: 16px;">📝 Import điểm trừ dạng text</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+                        Format: <code>Tuần X:&lt;Tên/Mã&gt;|&lt;điểm&gt;|&lt;lí do&gt;|&lt;ngày&gt;|</code><br>
+                        <strong>Nhiều học sinh cùng tuần phân cách bằng ;</strong><br>
+                        Ví dụ:<br>
+                        <code
+                            style="display: block; background: var(--bg-glass); padding: 12px; border-radius: 8px; margin-top: 8px; white-space: pre-line;">Tuần 1:Nguyễn Văn A|-5|Đi muộn|06/01|;105017|-10|Không làm BTVN||;Trần B|-5|Nói chuyện||
+Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
+                    </p>
+                    <textarea id="importTextArea" rows="8"
+                        style="width: 100%; padding: 14px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-family: monospace; font-size: 14px; resize: vertical;"
+                        placeholder="Dán dữ liệu vào đây..."></textarea>
+                    <button class="btn btn-danger" style="margin-top: 16px;" onclick="importTextScores()">Import điểm
+                        trừ</button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title" style="margin-bottom: 16px;">📥 Import danh sách học sinh (Excel/CSV)</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+                        File Excel/CSV cần có 2 cột: <code>name</code> (họ tên) và <code>student_code</code> (mã số)<br>
+                        <strong>Khuyến khích dùng file Excel (.xlsx) để hỗ trợ tiếng Việt tốt hơn</strong>
+                    </p>
+                    <input type="file" id="importStudentsFile" accept=".xlsx,.xls,.csv" style="margin-bottom: 16px;">
+                    <button class="btn btn-primary" onclick="importStudents()">Import học sinh</button>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title" style="margin-bottom: 16px;">Import điểm tuần trước (JSON)</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">
+                        File JSON: <code>[{ "student_code": "...", "points": -5, "note": "..." }]</code>
+                    </p>
+                    <div class="form-group" style="margin-bottom: 16px;">
+                        <label>Chọn tuần</label>
+                        <select id="importWeekSelect"
+                            style="width: 100%; padding: 14px 16px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-size: 15px;">
+                            <option value="">-- Chọn tuần --</option>
+                        </select>
+                    </div>
+                    <input type="file" id="importScoresFile" accept=".json" style="margin-bottom: 16px;">
+                    <button class="btn btn-primary" onclick="importScores()">Import điểm</button>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section class="section" id="history">
+                <div class="page-header">
+                    <h1 class="page-title">📜 Lịch sử chấm điểm</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Tất cả bản ghi điểm</h3>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Học sinh</th>
+                                    <th>Mã số</th>
+                                    <th>Tuần</th>
+                                    <th>Ngày</th>
+                                    <th>Nội dung</th>
+                                    <th>Điểm</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allRecordsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leaderboard Section -->
+            <section class="section" id="leaderboard">
+                <div class="page-header">
+                    <h1 class="page-title">Bảng xếp hạng</h1>
+                    <button class="btn btn-danger" onclick="resetAllPoints()">Reset tất cả về 100</button>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hạng</th>
+                                    <th>Họ tên</th>
+                                    <th>Mã số</th>
+                                    <th>Điểm</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="studentModalTitle">Thêm học sinh</h3>
+                <button class="modal-close" onclick="closeStudentModal()">✕</button>
+            </div>
+            <form id="studentModalForm">
+                <input type="hidden" id="editStudentId">
+                <div class="form-group">
+                    <label>Họ tên</label>
+                    <input type="text" id="modalStudentName" required>
+                </div>
+                <div class="form-group">
+                    <label>Mã số học sinh</label>
+                    <input type="text" id="modalStudentCode" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // State
+        let students = [];
+        let buttons = [];
+        let weeks = [];
+        let selectedStudent = null;
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+                link.classList.add('active');
+                document.getElementById(link.dataset.section).classList.add('active');
+
+                loadSectionData(link.dataset.section);
+            });
+        });
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // API helpers
+        async function api(url, method = 'GET', body = null) {
+            const options = { method, headers: { 'Content-Type': 'application/json' } };
+            if (body) options.body = JSON.stringify(body);
+            const res = await fetch(url, options);
+            return res.json();
+        }
+
+        // Load data
+        async function loadSectionData(section) {
+            switch (section) {
+                case 'dashboard': loadDashboard(); break;
+                case 'students': loadStudents(); break;
+                case 'scoring': loadScoring(); break;
+                case 'buttons': loadButtons(); break;
+                case 'weeks': loadWeeks(); break;
+                case 'import': loadImport(); break;
+                case 'history': loadHistory(); break;
+                case 'leaderboard': loadLeaderboard(); break;
+            }
+        }
+
+        async function loadHistory() {
+            const records = await api('/api/scores/all');
+            document.getElementById('allRecordsTable').innerHTML = records.map((r, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${r.student_name}</td>
+                    <td>${r.student_code}</td>
+                    <td>${r.week_name || '-'}</td>
+                    <td>${r.violation_date ? new Date(r.violation_date).toLocaleDateString('vi-VN') : '-'}</td>
+                    <td>${r.button_name || r.note || '-'}</td>
+                    <td><span class="points-badge ${r.points >= 0 ? 'positive' : 'negative'}">${r.points > 0 ? '+' : ''}${r.points}</span></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteScoreFromHistory(${r.id})">Xóa</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteScoreFromHistory(id) {
+            if (!confirm('Xóa bản ghi này?')) return;
+            await api(`/api/scores/${id}`, 'DELETE');
+            showToast('Đã xóa');
+            loadHistory();
+        }
+
+        async function loadDashboard() {
+            students = await api('/api/students');
+            weeks = await api('/api/weeks');
+            buttons = await api('/api/buttons');
+            const leaderboard = await api('/api/leaderboard');
+
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalWeeks').textContent = weeks.length;
+            document.getElementById('totalButtons').textContent = buttons.length;
+
+            const avgPoints = students.length ? Math.round(students.reduce((a, s) => a + s.points, 0) / students.length) : 0;
+            document.getElementById('avgPoints').textContent = avgPoints;
+
+            const top5 = leaderboard.slice(0, 5);
+            document.getElementById('topStudentsTable').innerHTML = top5.map((s, i) => `
+                <tr>
+                    <td>
+                        <div class="leaderboard-rank">
+                            <span class="rank-badge rank-${i + 1}">${i + 1}</span>
+                        </div>
+                    </td>
+                    <td>${s.name}</td>
+                    <td>${s.student_code}</td>
+                    <td><span class="points-badge ${s.points >= 100 ? 'positive' : 'negative'}">${s.points}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadStudents() {
+            students = await api('/api/students');
+            document.getElementById('studentsTable').innerHTML = students.map((s, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${s.name}</td>
+                    <td>${s.student_code}</td>
+                    <td><span class="points-badge ${s.points >= 100 ? 'positive' : 'negative'}">${s.points}</span></td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="editStudent(${s.id})">Sửa</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteStudent(${s.id})">Xóa</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadScoring() {
+            students = await api('/api/students');
+            buttons = await api('/api/buttons');
+            weeks = await api('/api/weeks');
+
+            const select = document.getElementById('selectStudent');
+            select.innerHTML = '<option value="">-- Chọn học sinh --</option>' +
+                students.map(s => `<option value="${s.id}">${s.name} (${s.student_code}) - ${s.points} điểm</option>`).join('');
+
+            // Populate week selector
+            const weekSelect = document.getElementById('selectWeek');
+            weekSelect.innerHTML = '<option value="">-- Chọn tuần --</option>' +
+                weeks.map(w => `<option value="${w.id}" ${w.is_active ? 'selected' : ''}>${w.name}</option>`).join('');
+
+            const bonusButtons = buttons.filter(b => b.type === 'bonus');
+            const penaltyButtons = buttons.filter(b => b.type === 'penalty');
+
+            document.getElementById('bonusButtons').innerHTML = bonusButtons.map(b =>
+                `<button class="preset-btn bonus" onclick="applyScore(${b.id}, ${b.points})">${b.name} +${b.points}</button>`
+            ).join('');
+
+            document.getElementById('penaltyButtons').innerHTML = penaltyButtons.map(b =>
+                `<button class="preset-btn penalty" onclick="applyScore(${b.id}, ${b.points})">${b.name} ${b.points}</button>`
+            ).join('');
+        }
+
+        document.getElementById('selectStudent').addEventListener('change', async (e) => {
+            selectedStudent = e.target.value;
+            if (selectedStudent) {
+                document.getElementById('scoringPanel').style.display = 'block';
+                document.getElementById('historyPanel').style.display = 'block';
+                loadStudentHistory(selectedStudent);
+            } else {
+                document.getElementById('scoringPanel').style.display = 'none';
+                document.getElementById('historyPanel').style.display = 'none';
+            }
+        });
+
+        async function loadStudentHistory(studentId) {
+            const history = await api(`/api/scores/student/${studentId}`);
+            document.getElementById('historyTable').innerHTML = history.map(h => `
+                <tr>
+                    <td>${h.week_name || '-'}</td>
+                    <td>${h.violation_date ? new Date(h.violation_date).toLocaleDateString('vi-VN') : '-'}</td>
+                    <td>${h.button_name || h.note || 'Điều chỉnh'}</td>
+                    <td><span class="points-badge ${h.points >= 0 ? 'positive' : 'negative'}">${h.points > 0 ? '+' : ''}${h.points}</span></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteScore(${h.id})">Xóa</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function applyScore(buttonId, points) {
+            if (!selectedStudent) return;
+
+            const weekId = document.getElementById('selectWeek').value;
+            const violationDate = document.getElementById('violationDate').value;
+
+            await api('/api/scores', 'POST', {
+                student_id: parseInt(selectedStudent),
+                button_id: buttonId,
+                week_id: weekId ? parseInt(weekId) : null,
+                points: points,
+                violation_date: violationDate || null
+            });
+            showToast(`Đã ${points > 0 ? 'cộng' : 'trừ'} ${Math.abs(points)} điểm`);
+            loadScoring();
+            loadStudentHistory(selectedStudent);
+        }
+
+        async function deleteScore(id) {
+            if (!confirm('Xóa bản ghi này?')) return;
+            await api(`/api/scores/${id}`, 'DELETE');
+            showToast('Đã xóa');
+            loadStudentHistory(selectedStudent);
+            loadScoring();
+        }
+
+        async function loadButtons() {
+            buttons = await api('/api/buttons');
+            document.getElementById('buttonsTable').innerHTML = buttons.map(b => `
+                <tr>
+                    <td>${b.name}</td>
+                    <td><span class="points-badge ${b.type === 'bonus' ? 'positive' : 'negative'}">${b.type === 'bonus' ? 'Cộng' : 'Trừ'}</span></td>
+                    <td>${b.type === 'bonus' ? '+' : ''}${b.points}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteButton(${b.id})">Xóa</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function addButton(type) {
+            const nameInput = type === 'bonus' ? 'bonusName' : 'penaltyName';
+            const pointsInput = type === 'bonus' ? 'bonusPoints' : 'penaltyPoints';
+
+            const name = document.getElementById(nameInput).value.trim();
+            let points = parseInt(document.getElementById(pointsInput).value);
+
+            if (!name) return showToast('Vui lòng nhập tên', 'error');
+            if (type === 'penalty') points = -Math.abs(points);
+
+            await api('/api/buttons', 'POST', { name, points, type });
+            showToast('Đã thêm nút');
+            document.getElementById(nameInput).value = '';
+            loadButtons();
+        }
+
+        async function deleteButton(id) {
+            if (!confirm('Xóa nút này?')) return;
+            await api(`/api/buttons/${id}`, 'DELETE');
+            showToast('Đã xóa');
+            loadButtons();
+        }
+
+        async function loadWeeks() {
+            weeks = await api('/api/weeks');
+            document.getElementById('weeksTable').innerHTML = weeks.map(w => `
+                <tr>
+                    <td>${w.name}</td>
+                    <td><a href="/overview?tuan=${w.id}" target="_blank" class="btn btn-primary btn-sm">Xem</a></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteWeek(${w.id})">Xóa</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function addWeek() {
+            const name = document.getElementById('weekName').value.trim();
+
+            if (!name) return showToast('Vui lòng nhập tên tuần', 'error');
+
+            await api('/api/weeks', 'POST', { name });
+            showToast('Đã thêm tuần');
+            document.getElementById('weekName').value = '';
+            loadWeeks();
+        }
+
+        async function addQuickWeeks() {
+            const from = parseInt(document.getElementById('weekFrom').value);
+            const to = parseInt(document.getElementById('weekTo').value);
+
+            if (!from || !to || from > to) {
+                return showToast('Số tuần không hợp lệ', 'error');
+            }
+
+            for (let i = from; i <= to; i++) {
+                await api('/api/weeks', 'POST', { name: `Tuần ${i}` });
+            }
+            showToast(`Đã thêm ${to - from + 1} tuần`);
+            loadWeeks();
+        }
+
+        async function deleteWeek(id) {
+            if (!confirm('Xóa tuần này và tất cả điểm liên quan?')) return;
+            await api(`/api/weeks/${id}`, 'DELETE');
+            showToast('Đã xóa');
+            loadWeeks();
+        }
+
+        async function loadImport() {
+            weeks = await api('/api/weeks');
+            document.getElementById('importWeekSelect').innerHTML =
+                '<option value="">-- Chọn tuần --</option>' +
+                weeks.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
+        }
+
+        async function importStudents() {
+            const file = document.getElementById('importStudentsFile').files[0];
+            if (!file) return showToast('Vui lòng chọn file', 'error');
+
+            const fileName = file.name.toLowerCase();
+            let students = [];
+
+            if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                // Use xlsx library for Excel files
+                const arrayBuffer = await file.arrayBuffer();
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const data = XLSX.utils.sheet_to_json(firstSheet);
+
+                students = data.map(row => ({
+                    name: row.name || row.Name || row['Họ tên'] || row['HO TEN'] || row['Họ Tên'],
+                    student_code: String(row.student_code || row.Student_Code || row['Mã số'] || row['MA SO'] || row['Mã Số'] || '')
+                })).filter(s => s.name && s.student_code);
+            } else {
+                // CSV fallback with encoding detection
+                const readFileWithEncoding = (encoding) => {
+                    return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsText(file, encoding);
+                    });
+                };
+
+                let text;
+                try {
+                    text = await readFileWithEncoding('UTF-8');
+                    if (text.includes('�') || text.includes('?ng')) {
+                        text = await readFileWithEncoding('windows-1252');
+                    }
+                } catch (e) {
+                    text = await file.text();
+                }
+
+                const lines = text.trim().split(/\r?\n/);
+                const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/["\ufeff]/g, ''));
+
+                students = lines.slice(1).map(line => {
+                    const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                    const obj = {};
+                    headers.forEach((h, i) => obj[h] = values[i]?.trim());
+                    return obj;
+                }).filter(s => s.name && s.student_code);
+            }
+
+            if (students.length === 0) {
+                return showToast('Không tìm thấy dữ liệu hợp lệ. Kiểm tra cột "name" và "student_code"', 'error');
+            }
+
+            await api('/api/import/students', 'POST', { students });
+            showToast(`Đã import ${students.length} học sinh`);
+            loadStudents();
+        }
+
+        async function importScores() {
+            const file = document.getElementById('importScoresFile').files[0];
+            const weekId = document.getElementById('importWeekSelect').value;
+
+            if (!file) return showToast('Vui lòng chọn file', 'error');
+            if (!weekId) return showToast('Vui lòng chọn tuần', 'error');
+
+            const text = await file.text();
+            const records = JSON.parse(text);
+
+            await api('/api/import/scores', 'POST', { records, week_id: parseInt(weekId) });
+            showToast(`Đã import ${records.length} bản ghi`);
+        }
+
+        async function importTextScores() {
+            const text = document.getElementById('importTextArea').value.trim();
+            if (!text) return showToast('Vui lòng nhập dữ liệu', 'error');
+
+            // Reload weeks and students for lookup
+            weeks = await api('/api/weeks');
+            students = await api('/api/students');
+
+            const lines = text.split(/\r?\n/).filter(l => l.trim());
+            let imported = 0;
+            let errors = [];
+
+            for (const line of lines) {
+                // Parse format: Tuần X:record1;record2;record3...
+                const colonIndex = line.indexOf(':');
+                if (colonIndex === -1) {
+                    errors.push(`Dòng không hợp lệ: "${line.substring(0, 30)}..."`);
+                    continue;
+                }
+
+                const weekName = line.substring(0, colonIndex).trim();
+                const recordsPart = line.substring(colonIndex + 1);
+
+                // Find week
+                const week = weeks.find(w => w.name.toLowerCase() === weekName.toLowerCase());
+                if (!week) {
+                    errors.push(`Không tìm thấy "${weekName}"`);
+                    continue;
+                }
+
+                // Split by ; for multiple students
+                const records = recordsPart.split(';').filter(r => r.trim());
+
+                for (const record of records) {
+                    // Parse: <Tên/Mã>|<điểm>|<lí do>|<ngày>|
+                    const parts = record.split('|').map(p => p.trim());
+                    if (parts.length < 3) {
+                        errors.push(`Record không hợp lệ: "${record.substring(0, 20)}..."`);
+                        continue;
+                    }
+
+                    const studentIdentifier = parts[0];
+                    const points = parseFloat(parts[1]);
+                    const reason = parts[2] || '';
+                    const dateStr = parts[3] || '';
+
+                    if (!studentIdentifier || isNaN(points)) {
+                        errors.push(`Dữ liệu không hợp lệ: "${record.substring(0, 20)}..."`);
+                        continue;
+                    }
+
+                    // Find student by code or name (convert to string for comparison)
+                    const student = students.find(s =>
+                        String(s.student_code) === String(studentIdentifier) ||
+                        s.name.toLowerCase() === studentIdentifier.toLowerCase()
+                    );
+                    if (!student) {
+                        errors.push(`Không tìm thấy học sinh "${studentIdentifier}"`);
+                        continue;
+                    }
+
+                    // Parse date (DD/MM or DD/MM/YYYY to YYYY-MM-DD)
+                    let violationDate = null;
+                    if (dateStr) {
+                        const dateParts = dateStr.split('/');
+                        if (dateParts.length >= 2) {
+                            const day = dateParts[0].padStart(2, '0');
+                            const month = dateParts[1].padStart(2, '0');
+                            const year = dateParts[2] || new Date().getFullYear();
+                            violationDate = `${year}-${month}-${day}`;
+                        }
+                    }
+
+                    // Create score record
+                    await api('/api/scores', 'POST', {
+                        student_id: student.id,
+                        button_id: null,
+                        week_id: week.id,
+                        points: points,
+                        note: reason,
+                        violation_date: violationDate
+                    });
+                    imported++;
+                }
+            }
+
+            if (errors.length > 0) {
+                console.log('Import errors:', errors);
+                showToast(`Đã import ${imported} bản ghi. ${errors.length} lỗi (xem console)`, 'error');
+            } else {
+                showToast(`Đã import ${imported} bản ghi thành công`);
+            }
+
+            document.getElementById('importTextArea').value = '';
+            loadScoring();
+        }
+
+        async function loadLeaderboard() {
+            const leaderboard = await api('/api/leaderboard');
+            document.getElementById('leaderboardTable').innerHTML = leaderboard.map((s, i) => `
+                <tr>
+                    <td>
+                        <div class="leaderboard-rank">
+                            <span class="rank-badge ${i < 3 ? 'rank-' + (i + 1) : ''}" style="${i >= 3 ? 'background: var(--bg-glass);' : ''}">${i + 1}</span>
+                        </div>
+                    </td>
+                    <td>${s.name}</td>
+                    <td>${s.student_code}</td>
+                    <td><span class="points-badge ${s.points >= 100 ? 'positive' : 'negative'}">${s.points}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        async function resetAllPoints() {
+            if (!confirm('Reset tất cả điểm về 100?')) return;
+            await api('/api/students/reset-points', 'POST');
+            showToast('Đã reset điểm');
+            loadLeaderboard();
+            loadDashboard();
+        }
+
+        // Student Modal
+        function showAddStudentModal() {
+            document.getElementById('studentModalTitle').textContent = 'Thêm học sinh';
+            document.getElementById('editStudentId').value = '';
+            document.getElementById('modalStudentName').value = '';
+            document.getElementById('modalStudentCode').value = '';
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            document.getElementById('studentModalTitle').textContent = 'Sửa học sinh';
+            document.getElementById('editStudentId').value = id;
+            document.getElementById('modalStudentName').value = student.name;
+            document.getElementById('modalStudentCode').value = student.student_code;
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.remove('active');
+        }
+
+        document.getElementById('studentModalForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editStudentId').value;
+            const name = document.getElementById('modalStudentName').value.trim();
+            const student_code = document.getElementById('modalStudentCode').value.trim();
+
+            if (id) {
+                await api(`/api/students/${id}`, 'PUT', { name, student_code });
+                showToast('Đã cập nhật');
+            } else {
+                await api('/api/students', 'POST', { name, student_code });
+                showToast('Đã thêm học sinh');
+            }
+
+            closeStudentModal();
+            loadStudents();
+        });
+
+        async function deleteStudent(id) {
+            if (!confirm('Xóa học sinh này?')) return;
+            await api(`/api/students/${id}`, 'DELETE');
+            showToast('Đã xóa');
+            loadStudents();
+        }
+
+        async function logout() {
+            await api('/api/auth/logout', 'POST');
+            window.location.href = '/';
+        }
+
+        // Check auth & init
+        (async () => {
+            const session = await api('/api/auth/session');
+            if (session.type !== 'admin') {
+                window.location.href = '/';
+                return;
+            }
+            loadDashboard();
+        })();
+    </script>
+</body>
+
+</html>

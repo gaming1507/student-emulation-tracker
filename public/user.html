@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Điểm Thi Đua - Học Sinh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <div style="max-width: 900px; margin: 0 auto; padding: 32px 20px;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+            <h1
+                style="font-size: 1.5rem; background: linear-gradient(135deg, var(--primary-light), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                🏆 Thi Đua
+            </h1>
+            <button class="btn btn-secondary btn-sm" onclick="logout()">Đăng xuất</button>
+        </div>
+
+        <!-- User Profile Card -->
+        <div class="user-header" id="profileCard">
+            <div class="user-avatar" id="userAvatar">?</div>
+            <h2 class="user-name" id="userName">Đang tải...</h2>
+            <p class="user-code" id="userCode"></p>
+
+            <div class="user-stats">
+                <div class="user-stat">
+                    <div class="user-stat-value" id="userPoints">-</div>
+                    <div class="user-stat-label">Tổng điểm</div>
+                </div>
+                <div class="user-stat">
+                    <div class="user-stat-value" id="userRank">-</div>
+                    <div class="user-stat-label">Xếp hạng</div>
+                </div>
+                <div class="user-stat">
+                    <div class="user-stat-value" id="userTotal">-</div>
+                    <div class="user-stat-label">Tổng số HS</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">📋 Lịch sử điểm</h3>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Nội dung</th>
+                            <th>Tuần</th>
+                            <th>Điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: var(--text-secondary);">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Leaderboard Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🏅 Bảng xếp hạng lớp</h3>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hạng</th>
+                            <th>Họ tên</th>
+                            <th>Điểm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardTable">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: var(--text-secondary);">Đang tải...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+
+        async function api(url) {
+            const res = await fetch(url);
+            return res.json();
+        }
+
+        async function loadProfile() {
+            try {
+                const profile = await api('/api/user/profile');
+                currentUserId = profile.id;
+
+                document.getElementById('userAvatar').textContent = profile.name.charAt(0).toUpperCase();
+                document.getElementById('userName').textContent = profile.name;
+                document.getElementById('userCode').textContent = `Mã số: ${profile.student_code}`;
+                document.getElementById('userPoints').textContent = profile.points;
+                document.getElementById('userRank').textContent = `#${profile.rank}`;
+                document.getElementById('userTotal').textContent = profile.total;
+            } catch (err) {
+                window.location.href = '/';
+            }
+        }
+
+        async function loadHistory() {
+            const history = await api('/api/user/history');
+
+            if (history.length === 0) {
+                document.getElementById('historyTable').innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-secondary);">Chưa có bản ghi nào</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            document.getElementById('historyTable').innerHTML = history.map(h => `
+                <tr>
+                    <td>${new Date(h.created_at).toLocaleString('vi-VN')}</td>
+                    <td>${h.button_name || h.note || 'Điều chỉnh'}</td>
+                    <td>${h.week_name || '-'}</td>
+                    <td>
+                        <span class="points-badge ${h.points >= 0 ? 'positive' : 'negative'}">
+                            ${h.points > 0 ? '+' : ''}${h.points}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadLeaderboard() {
+            const leaderboard = await api('/api/leaderboard');
+
+            document.getElementById('leaderboardTable').innerHTML = leaderboard.map((s, i) => `
+                <tr style="${s.id === currentUserId ? 'background: rgba(99, 102, 241, 0.1);' : ''}">
+                    <td>
+                        <div class="leaderboard-rank">
+                            <span class="rank-badge ${i < 3 ? 'rank-' + (i + 1) : ''}" style="${i >= 3 ? 'background: var(--bg-glass);' : ''}">${i + 1}</span>
+                        </div>
+                    </td>
+                    <td>${s.name} ${s.id === currentUserId ? '(Bạn)' : ''}</td>
+                    <td>
+                        <span class="points-badge ${s.points >= 100 ? 'positive' : 'negative'}">${s.points}</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function logout() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.href = '/';
+        }
+
+        // Check auth & load
+        (async () => {
+            const session = await api('/api/auth/session');
+            if (session.type !== 'student') {
+                window.location.href = '/';
+                return;
+            }
+
+            await loadProfile();
+            loadHistory();
+            loadLeaderboard();
+        })();
+    </script>
+</body>
+
+</html>
