@@ -31,6 +31,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Trust proxy (required for Railway, Render, etc.)
+app.set('trust proxy', 1);
+
 // Session configuration - production ready
 const isProduction = process.env.NODE_ENV === 'production';
 app.use(session({
@@ -38,12 +41,12 @@ app.use(session({
     secret: process.env.SESSION_SECRET || 'emulation-tracker-secret-key-change-in-production',
     resave: false,
     saveUninitialized: false,
-    rolling: true, // Reset session expiry on activity
+    rolling: true,
     cookie: {
-        secure: isProduction, // HTTPS only in production
-        httpOnly: true, // Prevent XSS attacks
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        sameSite: 'lax' // CSRF protection
+        secure: isProduction,
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: isProduction ? 'none' : 'lax' // 'none' for cross-site cookies in production
     }
 }));
 
