@@ -86,7 +86,7 @@ app.post('/api/auth/student/login', (req, res) => {
     const { studentCode } = req.body;
     const student = studentQueries.getByCode(studentCode);
     if (student) {
-        req.session.student = student;
+        req.session.student = { id: student.id }; // Only store ID, fetch fresh data when needed
         res.json({ success: true, student });
     } else {
         res.status(401).json({ error: 'Mã số học sinh không tồn tại' });
