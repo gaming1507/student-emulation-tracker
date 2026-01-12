@@ -4,11 +4,18 @@ const path = require('path');
 const fs = require('fs');
 
 let db = null;
-const DB_PATH = path.join(__dirname, 'data', 'emulation.db');
+const DATA_DIR = path.join(__dirname, 'data');
+const DB_PATH = path.join(DATA_DIR, 'emulation.db');
 
 // Initialize database
 async function initDatabase() {
     const SQL = await initSqlJs();
+
+    // Ensure data directory exists
+    if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+        console.log('📁 Created data directory');
+    }
 
     // Load existing database or create new one
     if (fs.existsSync(DB_PATH)) {

@@ -202,9 +202,14 @@ app.get('/api/overview/:weekId', (req, res) => {
 // ============ SCORE ROUTES ============
 
 app.post('/api/scores', requireAdmin, (req, res) => {
-    const { student_id, button_id, week_id, points, note, violation_date } = req.body;
-    const id = scoreQueries.create(student_id, button_id, week_id, points, note, violation_date);
-    res.json({ success: true, id });
+    try {
+        const { student_id, button_id, week_id, points, note, violation_date } = req.body;
+        const id = scoreQueries.create(student_id, button_id, week_id, points, note, violation_date);
+        res.json({ success: true, id });
+    } catch (err) {
+        console.error('Score creation error:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.get('/api/scores/student/:id', requireAdmin, (req, res) => {
