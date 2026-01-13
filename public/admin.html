@@ -771,6 +771,13 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
             loadWeeks();
         }
 
+        async function resetAllPoints() {
+            if (!confirm('Reset điểm TẤT CẢ học sinh về 100? Hành động này không thể hoàn tác!')) return;
+            await api('/api/reset-points', 'POST');
+            showToast('Đã reset tất cả điểm về 100');
+            loadDashboard();
+        }
+
         async function loadImport() {
             weeks = await api('/api/weeks');
             document.getElementById('importWeekSelect').innerHTML =
