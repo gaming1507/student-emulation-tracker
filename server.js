@@ -278,9 +278,12 @@ app.get('/api/scores/all', requireAdmin, async (req, res) => {
 
 app.delete('/api/scores/all', requireAdmin, async (req, res) => {
     try {
+        console.log('Deleting all scores...');
         await scoreQueries.deleteAll();
+        console.log('All scores deleted successfully');
         res.json({ success: true });
     } catch (err) {
+        console.error('Delete all scores error:', err);
         res.status(500).json({ error: err.message });
     }
 });
