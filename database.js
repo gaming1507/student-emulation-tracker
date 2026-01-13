@@ -263,15 +263,9 @@ const scoreQueries = {
         }
     },
     deleteAll: async () => {
-        try {
-            const deleteResult = await ScoreRecord.deleteMany({});
-            console.log('Deleted scores:', deleteResult.deletedCount);
-            const updateResult = await Student.updateMany({}, { points: 100 });
-            console.log('Reset students:', updateResult.modifiedCount);
-        } catch (err) {
-            console.error('deleteAll error:', err);
-            throw err;
-        }
+        const result = await ScoreRecord.deleteMany({});
+        console.log('Deleted scores:', result.deletedCount);
+        return result.deletedCount;
     }
 };
 
