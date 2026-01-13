@@ -559,7 +559,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
                     <td>${r.violation_date ? new Date(r.violation_date).toLocaleDateString('vi-VN') : '-'}</td>
                     <td>${r.button_name || r.note || '-'}</td>
                     <td><span class="points-badge ${r.points >= 0 ? 'positive' : 'negative'}">${r.points > 0 ? '+' : ''}${r.points}</span></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteScoreFromHistory(${r.id})">Xóa</button></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteScoreFromHistory('${r.id}')">Xóa</button></td>
                 </tr>
             `).join('');
         }
@@ -608,8 +608,8 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
                     <td>${s.student_code}</td>
                     <td><span class="points-badge ${s.points >= 100 ? 'positive' : 'negative'}">${s.points}</span></td>
                     <td>
-                        <button class="btn btn-secondary btn-sm" onclick="editStudent(${s.id})">Sửa</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteStudent(${s.id})">Xóa</button>
+                        <button class="btn btn-secondary btn-sm" onclick="editStudent('${s.id}')">Sửa</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteStudent('${s.id}')">Xóa</button>
                     </td>
                 </tr>
             `).join('');
@@ -633,11 +633,11 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
             const penaltyButtons = buttons.filter(b => b.type === 'penalty');
 
             document.getElementById('bonusButtons').innerHTML = bonusButtons.map(b =>
-                `<button class="preset-btn bonus" onclick="applyScore(${b.id}, ${b.points})">${b.name} +${b.points}</button>`
+                `<button class="preset-btn bonus" onclick="applyScore('${b.id}', ${b.points})">${b.name} +${b.points}</button>`
             ).join('');
 
             document.getElementById('penaltyButtons').innerHTML = penaltyButtons.map(b =>
-                `<button class="preset-btn penalty" onclick="applyScore(${b.id}, ${b.points})">${b.name} ${b.points}</button>`
+                `<button class="preset-btn penalty" onclick="applyScore('${b.id}', ${b.points})">${b.name} ${b.points}</button>`
             ).join('');
         }
 
@@ -661,7 +661,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
                     <td>${h.violation_date ? new Date(h.violation_date).toLocaleDateString('vi-VN') : '-'}</td>
                     <td>${h.button_name || h.note || 'Điều chỉnh'}</td>
                     <td><span class="points-badge ${h.points >= 0 ? 'positive' : 'negative'}">${h.points > 0 ? '+' : ''}${h.points}</span></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteScore(${h.id})">Xóa</button></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteScore('${h.id}')">Xóa</button></td>
                 </tr>
             `).join('');
         }
@@ -699,7 +699,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
                     <td>${b.name}</td>
                     <td><span class="points-badge ${b.type === 'bonus' ? 'positive' : 'negative'}">${b.type === 'bonus' ? 'Cộng' : 'Trừ'}</span></td>
                     <td>${b.type === 'bonus' ? '+' : ''}${b.points}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteButton(${b.id})">Xóa</button></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteButton('${b.id}')">Xóa</button></td>
                 </tr>
             `).join('');
         }
@@ -733,7 +733,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
                 <tr>
                     <td>${w.name}</td>
                     <td><a href="/overview?tuan=${w.id}" target="_blank" class="btn btn-primary btn-sm">Xem</a></td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteWeek(${w.id})">Xóa</button></td>
+                    <td><button class="btn btn-danger btn-sm" onclick="deleteWeek('${w.id}')">Xóa</button></td>
                 </tr>
             `).join('');
         }
