@@ -732,7 +732,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
             document.getElementById('weeksTable').innerHTML = weeks.map(w => `
                 <tr>
                     <td>${w.name}</td>
-                    <td><a href="/overview?tuan=${w.id}" target="_blank" class="btn btn-primary btn-sm">Xem</a></td>
+                    <td><a href="/overview?tuan=${w.weekNumber}" target="_blank" class="btn btn-primary btn-sm">Xem</a></td>
                     <td><button class="btn btn-danger btn-sm" onclick="deleteWeek('${w.id}')">Xóa</button></td>
                 </tr>
             `).join('');

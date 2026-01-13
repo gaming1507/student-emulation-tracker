@@ -212,12 +212,20 @@ app.get('/api/weeks/public', async (req, res) => {
     }
 });
 
-app.get('/api/overview/:weekId', async (req, res) => {
+app.get('/api/overview/:weekNum', async (req, res) => {
     try {
-        const weeks = await weekQueries.getAll();
-        const week = weeks.find(w => w.id.toString() === req.params.weekId);
-        const records = await scoreQueries.getByWeek(req.params.weekId);
-        res.json({ week, records });
+        const weekNum = parseInt(req.params.weekNum);
+        const week = await weekQueries.getByWeekNumber(weekNum);
+
+        if (!week) {
+            return res.json({ week: null, records: [] });
+        }
+
+        const records = await scoreQueries.getByWeek(week._id);
+        res.json({
+            week: { id: week._id, name: week.name, weekNumber: week.weekNumber },
+            records
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

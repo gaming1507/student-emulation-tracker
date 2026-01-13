@@ -42,7 +42,8 @@ const buttonSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const weekSchema = new mongoose.Schema({
-    name: { type: String, required: true }
+    name: { type: String, required: true },
+    weekNumber: { type: Number, unique: true, sparse: true }
 }, { timestamps: true });
 
 const scoreRecordSchema = new mongoose.Schema({
@@ -150,14 +151,23 @@ const buttonQueries = {
 
 const weekQueries = {
     getAll: async () => {
-        const weeks = await Week.find().sort({ createdAt: 1 });
-        return weeks.map(w => ({
+        const weeks = await Week.find().sort({ weekNumber: 1, createdAt: 1 });
+        return weeks.map((w, index) => ({
             id: w._id,
-            name: w.name
+            name: w.name,
+            weekNumber: w.weekNumber || index + 1
         }));
     },
+    getByWeekNumber: async (weekNumber) => {
+        const week = await Week.findOne({ weekNumber: parseInt(weekNumber) });
+        return week;
+    },
     create: async (name) => {
-        const week = await Week.create({ name });
+        // Extract number from name like "Tuần 5" -> 5
+        const match = name.match(/\d+/);
+        const weekNumber = match ? parseInt(match[0]) : null;
+
+        const week = await Week.create({ name, weekNumber });
         return week._id;
     },
     delete: async (id) => {

@@ -252,7 +252,7 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        let currentWeekId = urlParams.get('tuan');
+        let currentWeekNum = urlParams.get('tuan');
 
         async function init() {
             // Load weeks for selector
@@ -260,25 +260,25 @@
             const weekSelect = document.getElementById('weekSelect');
             weeks.forEach(w => {
                 const option = document.createElement('option');
-                option.value = w.id;
+                option.value = w.weekNumber;
                 option.textContent = w.name;
-                if (w.id == currentWeekId) option.selected = true;
+                if (w.weekNumber == currentWeekNum) option.selected = true;
                 weekSelect.appendChild(option);
             });
 
-            if (currentWeekId) {
-                loadWeekData(currentWeekId);
+            if (currentWeekNum) {
+                loadWeekData(currentWeekNum);
             } else if (weeks.length > 0) {
-                currentWeekId = weeks[0].id;
-                weekSelect.value = currentWeekId;
-                loadWeekData(currentWeekId);
+                currentWeekNum = weeks[0].weekNumber;
+                weekSelect.value = currentWeekNum;
+                loadWeekData(currentWeekNum);
             }
         }
 
-        function changeWeek(weekId) {
-            currentWeekId = weekId;
-            window.history.pushState({}, '', `/overview?tuan=${weekId}`);
-            loadWeekData(weekId);
+        function changeWeek(weekNum) {
+            currentWeekNum = weekNum;
+            window.history.pushState({}, '', `/overview?tuan=${weekNum}`);
+            loadWeekData(weekNum);
         }
 
         async function loadWeekData(weekId) {
