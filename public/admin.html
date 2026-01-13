@@ -775,6 +775,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
             if (!confirm('Reset điểm TẤT CẢ học sinh về 100? Hành động này không thể hoàn tác!')) return;
             await api('/api/reset-points', 'POST');
             showToast('Đã reset tất cả điểm về 100');
+            loadLeaderboard();
             loadDashboard();
         }
 
@@ -969,14 +970,6 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
                     <td><span class="points-badge ${s.points >= 100 ? 'positive' : 'negative'}">${s.points}</span></td>
                 </tr>
             `).join('');
-        }
-
-        async function resetAllPoints() {
-            if (!confirm('Reset tất cả điểm về 100?')) return;
-            await api('/api/students/reset-points', 'POST');
-            showToast('Đã reset điểm');
-            loadLeaderboard();
-            loadDashboard();
         }
 
         // Student Modal
