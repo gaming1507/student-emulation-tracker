@@ -421,6 +421,7 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
             <section class="section" id="history">
                 <div class="page-header">
                     <h1 class="page-title">📜 Lịch sử chấm điểm</h1>
+                    <button class="btn btn-danger" onclick="deleteAllScores()">Xóa tất cả bản ghi</button>
                 </div>
 
                 <div class="card">
@@ -569,6 +570,14 @@ Tuần 2:Lê Văn C|-5|Đi muộn|08/01|</code>
             await api(`/api/scores/${id}`, 'DELETE');
             showToast('Đã xóa');
             loadHistory();
+        }
+
+        async function deleteAllScores() {
+            if (!confirm('XÓA TẤT CẢ bản ghi điểm? Điểm học sinh sẽ được reset về 100. Hành động này KHÔNG THỂ hoàn tác!')) return;
+            await api('/api/scores/all', 'DELETE');
+            showToast('Đã xóa tất cả bản ghi');
+            loadHistory();
+            loadDashboard();
         }
 
         async function loadDashboard() {

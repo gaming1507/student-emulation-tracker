@@ -261,6 +261,11 @@ const scoreQueries = {
             }
             await ScoreRecord.findByIdAndDelete(id);
         }
+    },
+    deleteAll: async () => {
+        await ScoreRecord.deleteMany({});
+        // Reset all student points to 100
+        await Student.updateMany({}, { points: 100 });
     }
 };
 

@@ -276,6 +276,15 @@ app.get('/api/scores/all', requireAdmin, async (req, res) => {
     }
 });
 
+app.delete('/api/scores/all', requireAdmin, async (req, res) => {
+    try {
+        await scoreQueries.deleteAll();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // ============ LEADERBOARD ============
 
 app.get('/api/leaderboard', async (req, res) => {
