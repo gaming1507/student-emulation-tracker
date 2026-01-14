@@ -275,5 +275,7 @@ module.exports = {
     studentQueries,
     buttonQueries,
     weekQueries,
-    scoreQueries
+    scoreQueries,
+    // Export models directly
+    models: { Admin, Student, Button, Week, ScoreRecord }
 };

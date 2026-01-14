@@ -9,7 +9,8 @@ const {
     studentQueries,
     buttonQueries,
     weekQueries,
-    scoreQueries
+    scoreQueries,
+    models
 } = require('./database');
 
 const app = express();
@@ -278,10 +279,7 @@ app.get('/api/scores/all', requireAdmin, async (req, res) => {
 
 app.delete('/api/scores/all', requireAdmin, async (req, res) => {
     try {
-        // Use mongoose directly
-        const mongoose = require('mongoose');
-        const ScoreRecord = mongoose.model('ScoreRecord');
-        const Student = mongoose.model('Student');
+        const { ScoreRecord, Student } = models;
 
         // Delete all score records
         const deleteResult = await ScoreRecord.deleteMany({});
@@ -294,7 +292,7 @@ app.delete('/api/scores/all', requireAdmin, async (req, res) => {
         res.json({ success: true, deleted: deleteResult.deletedCount });
     } catch (err) {
         console.error('Delete all error:', err);
-        res.status(500).json({ error: err.message, stack: err.stack });
+        res.status(500).json({ error: err.message });
     }
 });
 
@@ -310,8 +308,7 @@ app.get('/api/leaderboard', async (req, res) => {
 
 app.post('/api/reset-points', requireAdmin, async (req, res) => {
     try {
-        const mongoose = require('mongoose');
-        const Student = mongoose.model('Student');
+        const { Student } = models;
         const updateResult = await Student.updateMany({}, { $set: { points: 100 } });
         console.log('Reset students:', updateResult.modifiedCount);
         res.json({ success: true, updated: updateResult.modifiedCount });
