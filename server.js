@@ -260,15 +260,7 @@ app.get('/api/scores/week/:id', requireAdmin, async (req, res) => {
     }
 });
 
-app.delete('/api/scores/:id', requireAdmin, async (req, res) => {
-    try {
-        await scoreQueries.delete(req.params.id);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
+// IMPORTANT: /api/scores/all routes must be BEFORE /api/scores/:id
 app.get('/api/scores/all', requireAdmin, async (req, res) => {
     try {
         res.json(await scoreQueries.getAll());
@@ -279,12 +271,6 @@ app.get('/api/scores/all', requireAdmin, async (req, res) => {
 
 app.delete('/api/scores/all', requireAdmin, async (req, res) => {
     try {
-        console.log('Models available:', Object.keys(models || {}));
-
-        if (!models || !models.ScoreRecord || !models.Student) {
-            return res.status(500).json({ error: 'Models not loaded', available: Object.keys(models || {}) });
-        }
-
         const { ScoreRecord, Student } = models;
 
         // Delete all score records
@@ -298,7 +284,17 @@ app.delete('/api/scores/all', requireAdmin, async (req, res) => {
         res.json({ success: true, deleted: deleteResult.deletedCount });
     } catch (err) {
         console.error('Delete all error:', err.name, err.message);
-        res.status(500).json({ error: err.message, name: err.name });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// This must be AFTER /api/scores/all
+app.delete('/api/scores/:id', requireAdmin, async (req, res) => {
+    try {
+        await scoreQueries.delete(req.params.id);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
