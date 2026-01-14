@@ -278,16 +278,23 @@ app.get('/api/scores/all', requireAdmin, async (req, res) => {
 
 app.delete('/api/scores/all', requireAdmin, async (req, res) => {
     try {
-        console.log('Deleting all scores...');
-        const count = await scoreQueries.deleteAll();
-        console.log('Deleted count:', count);
-        console.log('Resetting all points...');
-        await studentQueries.resetAllPoints();
-        console.log('Points reset done');
-        res.json({ success: true, deleted: count });
+        // Use mongoose directly
+        const mongoose = require('mongoose');
+        const ScoreRecord = mongoose.model('ScoreRecord');
+        const Student = mongoose.model('Student');
+
+        // Delete all score records
+        const deleteResult = await ScoreRecord.deleteMany({});
+        console.log('Deleted scores:', deleteResult.deletedCount);
+
+        // Reset all student points to 100
+        const updateResult = await Student.updateMany({}, { $set: { points: 100 } });
+        console.log('Reset students:', updateResult.modifiedCount);
+
+        res.json({ success: true, deleted: deleteResult.deletedCount });
     } catch (err) {
-        console.error('Delete all scores error:', err);
-        res.status(500).json({ error: err.message });
+        console.error('Delete all error:', err);
+        res.status(500).json({ error: err.message, stack: err.stack });
     }
 });
 
@@ -303,9 +310,13 @@ app.get('/api/leaderboard', async (req, res) => {
 
 app.post('/api/reset-points', requireAdmin, async (req, res) => {
     try {
-        await studentQueries.resetAllPoints();
-        res.json({ success: true });
+        const mongoose = require('mongoose');
+        const Student = mongoose.model('Student');
+        const updateResult = await Student.updateMany({}, { $set: { points: 100 } });
+        console.log('Reset students:', updateResult.modifiedCount);
+        res.json({ success: true, updated: updateResult.modifiedCount });
     } catch (err) {
+        console.error('Reset points error:', err);
         res.status(500).json({ error: err.message });
     }
 });
