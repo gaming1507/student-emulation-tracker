@@ -159,7 +159,13 @@ const weekQueries = {
         }));
     },
     getByWeekNumber: async (weekNumber) => {
-        const week = await Week.findOne({ weekNumber: parseInt(weekNumber) });
+        const num = parseInt(weekNumber);
+        // First try to find by weekNumber field
+        let week = await Week.findOne({ weekNumber: num });
+        // If not found, try to find by name containing the number (e.g., "Tuần 5")
+        if (!week) {
+            week = await Week.findOne({ name: new RegExp(`${num}`, 'i') });
+        }
         return week;
     },
     create: async (name) => {
