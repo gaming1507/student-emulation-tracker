@@ -279,6 +279,12 @@ app.get('/api/scores/all', requireAdmin, async (req, res) => {
 
 app.delete('/api/scores/all', requireAdmin, async (req, res) => {
     try {
+        console.log('Models available:', Object.keys(models || {}));
+
+        if (!models || !models.ScoreRecord || !models.Student) {
+            return res.status(500).json({ error: 'Models not loaded', available: Object.keys(models || {}) });
+        }
+
         const { ScoreRecord, Student } = models;
 
         // Delete all score records
@@ -291,8 +297,8 @@ app.delete('/api/scores/all', requireAdmin, async (req, res) => {
 
         res.json({ success: true, deleted: deleteResult.deletedCount });
     } catch (err) {
-        console.error('Delete all error:', err);
-        res.status(500).json({ error: err.message });
+        console.error('Delete all error:', err.name, err.message);
+        res.status(500).json({ error: err.message, name: err.name });
     }
 });
 
