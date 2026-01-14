@@ -113,7 +113,7 @@ const studentQueries = {
         await ScoreRecord.deleteMany({ student_id: id });
     },
     getLeaderboard: async () => {
-        const students = await Student.find().sort({ points: -1, name: 1 });
+        const students = await Student.find().sort({ points: -1, student_code: 1 });
         return students.map(s => ({
             id: s._id,
             name: s.name,
