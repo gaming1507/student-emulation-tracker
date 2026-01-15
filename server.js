@@ -382,8 +382,10 @@ app.get('/overview', async (req, res) => {
     if (weekNum) {
         const weekTitle = `📊 Tổng Kết Thi Đua Tuần ${weekNum}`;
         const weekDesc = `Xem chi tiết vi phạm, điểm trừ và thống kê học sinh tuần ${weekNum}`;
+        const weekUrl = `https://thidualop10-5.up.railway.app/overview?tuan=${weekNum}`;
 
         // Replace OG and Twitter meta tags
+        html = html.replace(/(<meta property="og:url" content=")[^"]+(")/g, `$1${weekUrl}$2`);
         html = html.replace(/(<meta property="og:title" content=")[^"]+(")/g, `$1${weekTitle}$2`);
         html = html.replace(/(<meta name="twitter:title" content=")[^"]+(")/g, `$1${weekTitle}$2`);
         html = html.replace(/(<meta property="og:description" content=")[^"]+(")/g, `$1${weekDesc}$2`);
