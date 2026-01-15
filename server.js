@@ -371,8 +371,27 @@ app.get('/user', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'user.html'));
 });
 
-app.get('/overview', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'overview.html'));
+app.get('/overview', async (req, res) => {
+    const weekNum = req.query.tuan;
+    const fs = require('fs');
+
+    // Read the HTML file
+    let html = fs.readFileSync(path.join(__dirname, 'public', 'overview.html'), 'utf8');
+
+    // If week number is provided, update meta tags dynamically
+    if (weekNum) {
+        const weekTitle = `📊 Tổng Kết Thi Đua Tuần ${weekNum}`;
+        const weekDesc = `Xem chi tiết vi phạm, điểm trừ và thống kê học sinh tuần ${weekNum}`;
+
+        // Replace OG and Twitter meta tags
+        html = html.replace(/(<meta property="og:title" content=")[^"]+(")/g, `$1${weekTitle}$2`);
+        html = html.replace(/(<meta name="twitter:title" content=")[^"]+(")/g, `$1${weekTitle}$2`);
+        html = html.replace(/(<meta property="og:description" content=")[^"]+(")/g, `$1${weekDesc}$2`);
+        html = html.replace(/(<meta name="twitter:description" content=")[^"]+(")/g, `$1${weekDesc}$2`);
+        html = html.replace(/(<title>)[^<]+(<\/title>)/g, `$1${weekTitle}$2`);
+    }
+
+    res.send(html);
 });
 
 app.get('/', (req, res) => {
